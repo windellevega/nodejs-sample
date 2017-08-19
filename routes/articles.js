@@ -79,8 +79,6 @@ router.post('/edit/:id', function(req, res) {
 			res.redirect('/');
 		}
 	});
-	//console.log(req.body.title);
-	//return;
 });
 
 router.delete('/:id', function(req, res) {
