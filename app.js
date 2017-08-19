@@ -1,38 +1,61 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+mongoose.connect('mongodb://localhost/nodedb');
+let db = mongoose.connection;
+
+//Check connection
+db.once('open', function() {
+	console.log('Connected to MongoDB');
+})
+
+//Check for DB errors
+db.on('error', function(err) {
+	console.log(err);
+});
 
 //Init App
 const app = express();
+
+//Bring in Models
+let Article = require('./models/article');
 
 //Load View Engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+//Body Parser Middleware
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extend: false }));
+// parse application/json
+app.use(bodyParser.json());
+
+//Set Public Folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 //Home Route
 app.get('/', function(req, res) {
-	let articles = [
-		{
-			id:1,
-			title:'Article One',
-			author:'Windelle Vega',
-			body:'This is article 1'
-		},
-		{
-			id:2,
-			title:'Article Two',
-			author:'Windelle Vega',
-			body:'This is article 2'
-		},
-		{
-			id:3,
-			title:'Article Three',
-			author:'Windelle Vega',
-			body:'This is article 3'
+	Article.find({}, function(err, articles) {
+		if(err) {
+			console.log(err);
 		}
-	]
-	res.render('index', {
-		title:'Articles',
-		articles:articles
+		else {
+			res.render('index', {
+				title:'Articles',
+				articles:articles
+			});
+		}
+	});
+});
+
+//Get Single Article
+app.get('/article/:id', function(req, res) {
+	Article.findById(req.params.id, function(err, article) {
+		res.render('article', {
+			article:article
+		});
 	});
 });
 
@@ -42,6 +65,26 @@ app.get('/articles/add', function(req, res) {
 		title:'Add Article'
 	});
 });
+
+//Add Submit POST route
+app.post('/articles/add', function(req, res) {
+	let article = new Article();
+	article.title = req.body.title;
+	article.author = req.body.author;
+	article.body = req.body.body;
+
+	article.save(function(err) {
+		if(err) {
+			console.log(err);
+			return;
+		}
+		else {
+			res.redirect('/');
+		}
+	});
+	//console.log(req.body.title);
+	//return;
+})
 
 //Start Server
 app.listen('3000', function() {
