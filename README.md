@@ -1,6 +1,7 @@
 # Article Knowledgebase Application
 
-This is a knowledgebase app used in the "Node.js & Express From Scratch" Youtube series.
+This is a knowledgebase app used in the "Node.js & Express From Scratch" Youtube series of Traversy Media by Brad Traversy.
+Actual repository [here](https://github.com/bradtraversy/nodekb).
 
 ## Technologies
 * Node.js
@@ -11,8 +12,6 @@ This is a knowledgebase app used in the "Node.js & Express From Scratch" Youtube
 * Passport.js Authentication
 * BCrypt Hashing
 
-### Version
-2.0.0
 
 ## Usage
 
